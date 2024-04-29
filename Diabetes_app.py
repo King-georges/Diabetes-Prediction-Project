@@ -1,5 +1,5 @@
 import streamlit as st
-import requests
+import hashlib 
 from streamlit_lottie import st_lottie
 import numpy as np
 import pandas as pd
@@ -27,3 +27,83 @@ def load_lottieurl(url):
      if r.status_code != 200:
           return None
      return r.json()
+
+import streamlit as st
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+
+# Function to preprocess input data
+def preprocess_data(df):
+    # Perform any necessary preprocessing (e.g., encoding categorical variables)
+    # For simplicity, we'll assume all data is numeric and ready to use
+    return df
+
+# Load the pre-trained model
+@st.cache
+def load_model():
+    model = RandomForestClassifier()  # You can replace this with your trained model
+    return model
+
+def predict_diabetes(input_data, model):
+    # Preprocess input data
+    input_df = pd.DataFrame([input_data])
+    input_df = preprocess_data(input_df)
+
+    # Load the trained model
+    model = load_model()
+
+    # Make predictions
+    prediction = model.predict(input_df)
+    prediction_proba = model.predict_proba(input_df)
+
+    return prediction[0], prediction_proba
+
+# Define the Streamlit app
+def main():
+    st.title("Diabetes Prediction App")
+
+    # Collect user input
+    st.sidebar.header("User Input")
+    pregnancies = st.sidebar.number_input("Number of Pregnancies", min_value=0, max_value=17, value=0)
+    glucose = st.sidebar.slider("Glucose Level", min_value=0, max_value=200, value=100)
+    blood_pressure = st.sidebar.slider("Blood Pressure (mmHg)", min_value=0, max_value=150, value=70)
+    skin_thickness = st.sidebar.slider("Skin Thickness (mm)", min_value=0, max_value=99, value=20)
+    insulin = st.sidebar.slider("Insulin (mu U/ml)", min_value=0, max_value=846, value=79)
+    bmi = st.sidebar.slider("BMI", min_value=0.0, max_value=67.1, value=25.0)
+    age = st.sidebar.slider("Age (years)", min_value=0, max_value=120, value=25)
+
+    input_data = {
+        'Pregnancies': pregnancies,
+        'Glucose': glucose,
+        'BloodPressure': blood_pressure,
+        'SkinThickness': skin_thickness,
+        'Insulin': insulin,
+        'BMI': bmi,
+        'Age': age
+    }
+
+    # Make prediction
+    prediction, prediction_proba = predict_diabetes(input_data, model)
+
+    # Interpret prediction
+    classes = ['No Diabetes', 'Pre-Diabetes', 'Diabetes']
+    result_class = classes[prediction]
+    st.write(f"Prediction: {result_class}")
+
+    # Display prediction probabilities
+    st.write("Prediction Probabilities:")
+    for i, prob in enumerate(prediction_proba[0]):
+        st.write(f"{classes[i]}: {prob:.2f}")
+
+    # Provide recommendations based on prediction
+    if result_class == 'No Diabetes':
+        st.write("You are healthy!")
+    elif result_class == 'Pre-Diabetes':
+        st.write("You are likely to have pre-diabetes. We recommend some lifestyle changes.")
+        # Provide lifestyle change recommendations for pre-diabetes
+    else:
+        st.write("You are likely to have diabetes. Please seek medical attention.")
+
+if __name__ == "__main__":
+    main()
