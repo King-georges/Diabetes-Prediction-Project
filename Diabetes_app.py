@@ -66,43 +66,37 @@ def main():
     # Collect user input
     st.sidebar.header("User Input")
     pregnancies = st.sidebar.number_input("Number of Pregnancies", min_value=0, max_value=17, value=0)
-    glucose = st.sidebar.slider("Glucose Level", min_value=0, max_value=200, value=100)
-    blood_pressure = st.sidebar.slider("Blood Pressure (mmHg)", min_value=0, max_value=150, value=70)
+    cholesterol = st.sidebar.selectbox(
+    "Select cholesterol level:",
+    ('High', 'Low')
+    )
+    blood_pressure = st.sidebar.slider("Blood Pressure", min_value=0, max_value=1, value=1)
     skin_thickness = st.sidebar.slider("Skin Thickness (mm)", min_value=0, max_value=99, value=20)
     insulin = st.sidebar.slider("Insulin (mu U/ml)", min_value=0, max_value=846, value=79)
     bmi = st.sidebar.slider("BMI", min_value=0.0, max_value=67.1, value=25.0)
     age = st.sidebar.slider("Age (years)", min_value=0, max_value=120, value=25)
 
-    input_data = {
-        'Pregnancies': pregnancies,
-        'Glucose': glucose,
-        'BloodPressure': blood_pressure,
-        'SkinThickness': skin_thickness,
-        'Insulin': insulin,
-        'BMI': bmi,
-        'Age': age
-    }
 
     # Make prediction
-    prediction, prediction_proba = predict_diabetes(input_data, model)
+prediction, prediction_proba = predict_diabetes(input_data, model)
 
     # Interpret prediction
-    classes = ['No Diabetes', 'Pre-Diabetes', 'Diabetes']
-    result_class = classes[prediction]
-    st.write(f"Prediction: {result_class}")
+classes = ['No Diabetes', 'Pre-Diabetes', 'Diabetes']
+result_class = classes[prediction]
+st.write(f"Prediction: {result_class}")
 
     # Display prediction probabilities
-    st.write("Prediction Probabilities:")
-    for i, prob in enumerate(prediction_proba[0]):
+st.write("Prediction Probabilities:")
+for i, prob in enumerate(prediction_proba[0]):
         st.write(f"{classes[i]}: {prob:.2f}")
 
     # Provide recommendations based on prediction
-    if result_class == 'No Diabetes':
+if result_class == 'No Diabetes':
         st.write("You are healthy!")
-    elif result_class == 'Pre-Diabetes':
+elif result_class == 'Pre-Diabetes':
         st.write("You are likely to have pre-diabetes. We recommend some lifestyle changes.")
         # Provide lifestyle change recommendations for pre-diabetes
-    else:
+else:
         st.write("You are likely to have diabetes. Please seek medical attention.")
 
 if __name__ == "__main__":
