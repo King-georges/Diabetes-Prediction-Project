@@ -1,42 +1,54 @@
 import streamlit as st
-import hashlib 
-from streamlit_lottie import st_lottie
-import numpy as np
-import pandas as pd
-from sklearn import metrics
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-
-st.set_page_config(page_title="Diabetes Prediction App",
-                page_icon= ":bar_chart:")
-st.title('Diabetes Prediction app')
-st.write("""
-## This app predicts the likelihood of having Pre-Diabetes and Diabetes.
-
-Data obtained from Kaggle and is used to predict Diabetes. Patients were classified as no diabetes, pr-diabetes or having diabetes.
-https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset 
-         
-It is most suitable for medical experts with the necessary domain knowledge on Diabetes
-""")
-st.write('---')
-def load_lottieurl(url):
-     r = requests.get(url)
-     if r.status_code != 200:
-          return None
-     return r.json()
-
-import streamlit as st
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
+import streamlit as st
+
+# Set page configuration with the logo
+st.set_page_config(
+    page_title="Model Mavericks Analytics",
+    page_icon='images/model mavericks.jpg',  # Correct path to your logo
+    layout='wide'
+)
+
+# Define the primary colors from the logo
+primary_color = "#1a73e8"  # Example primary blue shade
+background_color = "##1a73e8"  # White background
+secondary_background_color = "#1a73e8"  # Lighter blue shade
+text_color = "#000000"  # Black text for better readability
+
+# Use custom styles to apply color scheme via a CSS block in Markdown
+css = f"""
+<style>
+    /* Main content area */
+    .main .block-container{{
+        background-color: {secondary_background_color};
+        color: {text_color};
+    }}
+    /* Sidebar styling */
+    .sidebar .sidebar-content {{
+        background-color: {background_color};
+        color: {text_color};
+    }}
+    /* Button styling */
+    button {{
+        background-color: {background_color};
+        color: {background_color};
+    }}
+</style>
+"""
+
+st.markdown(css, unsafe_allow_html=True)
+
+# Display the logo at the top of your app
+st.image('images/model mavericks.webp', width=100)  # Adjust size as needed
+
+# Your app content
+st.title("Welcome to Model Mavericks Analytics")
+st.header("Data-driven insights with a stylish interface.")
 
 # Function to preprocess input data
 def preprocess_data(df):
-    # Perform any necessary preprocessing (e.g., encoding categorical variables)
-    # For simplicity, we'll assume all data is numeric and ready to use
+    # Here, you may want to encode categorical variables if they are not already numeric
     return df
 
 # Load the pre-trained model
@@ -59,45 +71,63 @@ def predict_diabetes(input_data, model):
 
     return prediction[0], prediction_proba
 
-# Define the Streamlit app
 def main():
     st.title("Diabetes Prediction App")
 
-    # Collect user input
-    st.sidebar.header("User Input")
-    pregnancies = st.sidebar.number_input("Number of Pregnancies", min_value=0, max_value=17, value=0)
-    cholesterol = st.sidebar.selectbox(
-    "Select cholesterol level:",
-    ('High', 'Low')
-    )
-    blood_pressure = st.sidebar.slider("Blood Pressure", min_value=0, max_value=1, value=1)
-    skin_thickness = st.sidebar.slider("Skin Thickness (mm)", min_value=0, max_value=99, value=20)
-    insulin = st.sidebar.slider("Insulin (mu U/ml)", min_value=0, max_value=846, value=79)
-    bmi = st.sidebar.slider("BMI", min_value=0.0, max_value=67.1, value=25.0)
-    age = st.sidebar.slider("Age (years)", min_value=0, max_value=120, value=25)
+    # Collect user input on the sidebar
+    st.sidebar.header("User Input Parameters")
+    
+    # Categorical Inputs
+    blood_pressure = st.sidebar.radio("Blood Pressure", (1, 0), format_func=lambda x: "High BP" if x == 1 else "Normal BP")
+    cholesterol = st.sidebar.radio("Cholesterol", (1, 0), format_func=lambda x: "High Cholesterol" if x == 1 else "Normal Cholesterol")
+    stroke = st.sidebar.radio("Stroke", (1, 0), format_func=lambda x: "Had Stroke" if x == 1 else "Never had Stroke")
+    heart_disease = st.sidebar.radio("Heart Disease or Attack", (1, 0), format_func=lambda x: "Heart Disease" if x == 1 else "No Heart Disease/Attack")
+    difficulty_walking = st.sidebar.radio("Difficulty Walking", (1, 0), format_func=lambda x: "Difficulty Walking" if x == 1 else "No Difficulty Walking")
 
+    # Numerical and Categorical Input Using Dropdown
+    age_options = ["18-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", 
+                   "60-64", "65-69", "70-74", "75-79", "80 or older"]
+    age = st.sidebar.selectbox("Age Range", options=age_options)
+
+    bmi = st.sidebar.slider("BMI", min_value=0, max_value=100, value=25)
+    general_health = st.sidebar.slider("General Health", min_value=1, max_value=5, value=3)
+    mental_health = st.sidebar.slider("Mental Health Days", min_value=0, max_value=30, value=2)
+    physical_health = st.sidebar.slider("Physical Health Days", min_value=0, max_value=30, value=1)
+
+    input_data = {
+        'BloodPressure': blood_pressure,
+        'Cholesterol': cholesterol,
+        'Stroke': stroke,
+        'HeartDisease': heart_disease,
+        'DifficultyWalking': difficulty_walking,
+        'BMI': bmi,
+        'GeneralHealth': general_health,
+        'MentalHealth': mental_health,
+        'Age': age,
+        'PhysicalHealth': physical_health
+    }
 
     # Make prediction
-prediction, prediction_proba = predict_diabetes(input_data, model)
+    model = load_model()
+    prediction, prediction_proba = predict_diabetes(input_data, model)
 
     # Interpret prediction
-classes = ['No Diabetes', 'Pre-Diabetes', 'Diabetes']
-result_class = classes[prediction]
-st.write(f"Prediction: {result_class}")
+    classes = ['No Diabetes', 'Pre-Diabetes', 'Diabetes']
+    result_class = classes[prediction]
+    st.write(f"Prediction: {result_class}")
 
     # Display prediction probabilities
-st.write("Prediction Probabilities:")
-for i, prob in enumerate(prediction_proba[0]):
+    st.write("Prediction Probabilities:")
+    for i, prob in enumerate(prediction_proba[0]):
         st.write(f"{classes[i]}: {prob:.2f}")
 
     # Provide recommendations based on prediction
-if result_class == 'No Diabetes':
+    if result_class == 'No Diabetes':
         st.write("You are healthy!")
-elif result_class == 'Pre-Diabetes':
+    elif result_class == 'Pre-Diabetes':
         st.write("You are likely to have pre-diabetes. We recommend some lifestyle changes.")
-        # Provide lifestyle change recommendations for pre-diabetes
-else:
+    else:
         st.write("You are likely to have diabetes. Please seek medical attention.")
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
