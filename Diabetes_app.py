@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import requests
+from streamlit_lottie import st_lottie
 
 # Set page configuration with the logo
 st.set_page_config(
@@ -11,6 +13,16 @@ st.set_page_config(
 
 # Display the logo at the top of your app
 st.image('images/model mavericks.jpg', width=100)  # Adjust size as needed
+
+def load_lottieurl(url):
+     r = requests.get(url)
+     if r.status_code != 200:
+          return None
+     return r.json()
+
+lottie_coding = "https://lottie.host/57fc3155-e3dc-4611-b50a-ccd5a58291e0/84oE4KwywI.json"
+
+st_lottie(lottie_coding, height=300, width=400, key="health")
 
 # Load the pre-trained model
 @st.cache_data
@@ -97,3 +109,28 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+st.write('---')
+
+def load_lottieurl(url):
+     r = requests.get(url)
+     if r.status_code != 200:
+          return None
+     return r.json()
+
+lottie_coding = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCHHb79.json"
+
+st_lottie(lottie_coding, height=300, width=400, key="health2")
+
+st.write('---')
+
+st.write("""
+## This app predicts the likelihood of having Diabetes.
+
+ Patients were classified as having Pre-diabetes, Diabetes or not having diabetes.
+
+It is most suitable for medical experts with the necessary domain knowledge on Diabetes.
+""")
+
+st.markdown('Data obtained from [Kaggle](https://www.kaggle.com/code/nanda107/diabetes) and is used to predict Diabetes.')
+st.write('---')
