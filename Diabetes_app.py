@@ -9,31 +9,8 @@ st.set_page_config(
     layout='wide'
 )
 
-
-
 # Display the logo at the top of your app
 st.image('images/model mavericks.jpg', width=100)  # Adjust size as needed
-
-# Function to preprocess input data
-def preprocess_data(df):
-    # Map string age ranges to numerical midpoints (or other necessary preprocessing)
-    age_mapping = {
-        "18-24": 21,
-        "25-29": 27,
-        "30-34": 32,
-        "35-39": 37,
-        "40-44": 42,
-        "45-49": 47,
-        "50-54": 52,
-        "55-59": 57,
-        "60-64": 62,
-        "65-69": 67,
-        "70-74": 72,
-        "75-79": 77,
-        "80 or older": 85
-    }
-    df['Age'] = df['Age'].map(age_mapping)  # Map the string age ranges to numerical values
-    return df
 
 # Load the pre-trained model
 @st.cache_data
@@ -48,14 +25,11 @@ def predict_diabetes(input_data, model):
     expected_features = [
         'BloodPressure', 'Cholesterol', 'Stroke', 'HeartDisease', 'DifficultyWalking',
         'BMI', 'GeneralHealth', 'MentalHealth', 'Age', 'PhysicalHealth'
-    ]  # Modify this list based on the actual features used in model training
+    ]
 
     # Create DataFrame from input data ensuring the order of features
     input_df = pd.DataFrame([input_data], columns=expected_features)
     
-    # Apply preprocessing if necessary
-    input_df = preprocess_data(input_df)
-
     # Load the trained model (already cached)
     prediction = model.predict(input_df)
     prediction_proba = model.predict_proba(input_df)
@@ -73,8 +47,13 @@ def main():
     heart_disease = st.sidebar.radio("Heart Disease or Attack", (1, 0), format_func=lambda x: "Heart Disease" if x == 1 else "No Heart Disease/Attack")
     difficulty_walking = st.sidebar.radio("Difficulty Walking", (1, 0), format_func=lambda x: "Difficulty Walking" if x == 1 else "No Difficulty Walking")
 
-    age_options = ["18-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80 or older"]
+    age_options = [
+        "18-24", "25-29", "30-34", "35-39", "40-44", "45-49",
+        "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80 or older"
+    ]
     age = st.sidebar.selectbox("Age Range", options=age_options)
+    # Convert age range to class number
+    age_class = age_options.index(age) + 1
 
     bmi = st.sidebar.slider("BMI", min_value=0, max_value=100, value=25)
     general_health = st.sidebar.slider("General Health", min_value=1, max_value=5, value=3)
@@ -90,7 +69,7 @@ def main():
         'BMI': bmi,
         'GeneralHealth': general_health,
         'MentalHealth': mental_health,
-        'Age': age,
+        'Age': age_class,  # Using age class derived from the selected age range
         'PhysicalHealth': physical_health
     }
 
@@ -99,8 +78,8 @@ def main():
     prediction, prediction_proba = predict_diabetes(input_data, model)
 
     # Interpret prediction
-    classes = ['No Diabetes', 'Pre-Diabetes', 'Diabetes']
-    result_class = classes[prediction]
+    classes = ['Diabetes', 'Pre-Diabetes', 'No Diabetes']
+    result_class = classes[int(prediction)]  # Convert prediction to integer for indexing
     st.write(f"Prediction: {result_class}")
 
     # Display prediction probabilities
