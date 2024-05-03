@@ -11,8 +11,7 @@ st.set_page_config(
     layout='wide'
 )
 
-# Display the logo at the top of your app
-st.image('images/model mavericks.jpg', width=100)  # Adjust size as needed
+
 
 def load_lottieurl(url):
      r = requests.get(url)
@@ -24,13 +23,14 @@ lottie_coding = "https://lottie.host/57fc3155-e3dc-4611-b50a-ccd5a58291e0/84oE4K
 
 st_lottie(lottie_coding, height=300, width=400, key="health")
 
-# Load the pre-trained model
-@st.cache_data
-def load_model():
+left_column, right_column = st.columns(2)
+with left_column:
+     @st.cache_data
+     def load_model():
     # Assuming model.pkl is in the same directory as your script
-    with open('MVP.pkl', 'rb') as file:
+      with open('MVP.pkl', 'rb') as file:
         model = pickle.load(file)
-    return model
+        return model
 
 def predict_diabetes(input_data, model):
     # Ensure input data features match those the model was trained with
@@ -85,6 +85,7 @@ def main():
         'PhysicalHealth': physical_health
     }
 
+
     # Make prediction
     model = load_model()
     prediction, prediction_proba = predict_diabetes(input_data, model)
@@ -109,10 +110,8 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-st.write('---')
-
-def load_lottieurl(url):
+with right_column:
+    def load_lottieurl(url):
      r = requests.get(url)
      if r.status_code != 200:
           return None
@@ -122,15 +121,24 @@ lottie_coding = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCH
 
 st_lottie(lottie_coding, height=300, width=400, key="health2")
 
+
+
+
 st.write('---')
+
+
+st.write('---')
+
+st.markdown('Data obtained from [Kaggle](https://www.kaggle.com/code/nanda107/diabetes) and is used to predict Diabetes.')
 
 st.write("""
 ## This app predicts the likelihood of having Diabetes.
+
 
  Patients were classified as having Pre-diabetes, Diabetes or not having diabetes.
 
 It is most suitable for medical experts with the necessary domain knowledge on Diabetes.
 """)
 
-st.markdown('Data obtained from [Kaggle](https://www.kaggle.com/code/nanda107/diabetes) and is used to predict Diabetes.')
+
 st.write('---')
