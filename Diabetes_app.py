@@ -11,7 +11,7 @@ st.set_page_config(
     layout='wide'
 )
 
-
+st.title("Diabetes Prediction App")
 
 def load_lottieurl(url):
      r = requests.get(url)
@@ -22,6 +22,8 @@ def load_lottieurl(url):
 lottie_coding = "https://lottie.host/57fc3155-e3dc-4611-b50a-ccd5a58291e0/84oE4KwywI.json"
 
 st_lottie(lottie_coding, height=300, width=400, key="health")
+
+st.write('---')
 
 left_column, right_column = st.columns(2)
 with left_column:
@@ -49,7 +51,7 @@ def predict_diabetes(input_data, model):
     return prediction[0], prediction_proba
 
 def main():
-    st.title("Diabetes Prediction App")
+    st.title("Your Prediction")
     st.sidebar.header("User Input Parameters")
 
     # Collecting inputs using sidebar
@@ -110,16 +112,9 @@ def main():
 
 if __name__ == "__main__":
     main()
-with right_column:
-    def load_lottieurl(url):
-     r = requests.get(url)
-     if r.status_code != 200:
-          return None
-     return r.json()
-
-lottie_coding = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCHHb79.json"
-
-st_lottie(lottie_coding, height=300, width=400, key="health2")
+    with right_column:
+         lottie_coding = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCHHb79.json"
+         st_lottie(lottie_coding, height=300, width=400, key="health2")
 
 
 
@@ -127,7 +122,7 @@ st_lottie(lottie_coding, height=300, width=400, key="health2")
 st.write('---')
 
 
-st.write('---')
+
 
 st.markdown('Data obtained from [Kaggle](https://www.kaggle.com/code/nanda107/diabetes) and is used to predict Diabetes.')
 
@@ -142,3 +137,30 @@ It is most suitable for medical experts with the necessary domain knowledge on D
 
 
 st.write('---')
+
+def local_css(file_name):
+     with open(file_name) as f:
+          st.markdown (f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+local_css("Style/style.css")
+
+with st.container():
+     st.write("---")
+     st.header("Get in touch with us!")
+     st.write("##")
+     contact_form = '''
+     <input type="hidden" name="_captcha" value="false">
+     <form action="https://formsubmit.co/opondigeorge@gmail.com" method="POST">
+     <input type="text" name="name" placeholder="Your name" required>
+     <input type="email" name="email" placeholder="Your email" required>
+     <textarea name="Message" placeholder="Your message here" required></textarea>
+     <button type="submit">Send</button>
+</form>
+'''
+lottie_animation = "https://lottie.host/87b1eda6-f65b-47f0-b06a-fa93ee6f73ba/bNjIHSLbzV.json"
+left_column, right_column = st.columns (2)
+with left_column:
+     st.markdown (contact_form, unsafe_allow_html=True)
+     with right_column:
+          st_lottie(lottie_animation, height=300, width=400, key="message")
+          
