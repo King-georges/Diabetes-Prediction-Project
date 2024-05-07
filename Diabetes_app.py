@@ -25,14 +25,27 @@ st_lottie(lottie_coding, height=300, width=400, key="health")
 
 st.write('---')
 
-left_column, right_column = st.columns(2)
-with left_column:
-     @st.cache_data
-     def load_model():
-    # Assuming model.pkl is in the same directory as your script
-      with open('MVP.pkl', 'rb') as file:
+def download_file(url, local_filename):
+    with requests.get(url, stream=True) as r:
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:  # filter out keep-alive new chunks
+                    f.write(chunk)
+    return local_filename
+
+# URL where the model is hosted
+model_url = 'https://www.dropbox.com/scl/fi/q5idhm55ga66sx7w45dlk/MVP.pkl?rlkey=bt3pdmf9u5s0bno5ppezxczmq&st=5wj5j84u&dl=0'
+model_path = download_file(model_url, 'MVP.pkl')
+
+@st.cache
+def load_model():
+    # Load the model from the downloaded file
+    with open(model_path, 'rb') as file:
         model = pickle.load(file)
         return model
+left_column, right_column = st.columns(2)
+with left_column:
+     model = load_model()
 
 def predict_diabetes(input_data, model):
     # Ensure input data features match those the model was trained with
