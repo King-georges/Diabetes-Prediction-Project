@@ -100,13 +100,13 @@ def main():
     # Display prediction probabilities
     st.write("Prediction Probabilities:")
     for i, prob in enumerate(prediction_proba[0]):
-        st.write(f"{classes[i]}: {prob:.2f}")
+        st.write(f"{classes[i]}: {prob * 100:.2f}%") 
 
     # Provide recommendations based on prediction
     if result_class == 'No Diabetes':
         st.write("You are healthy!")
     elif result_class == 'Pre-Diabetes':
-        st.write("You are likely to have pre-diabetes. We recommend some lifestyle changes.")
+        st.write("You are likely to have pre-diabetes. We recommend some [lifestyle changes.](https://www.hopkinsmedicine.org/health/wellness-and-prevention/prediabetes-diet#:~:text=Stay%20active,aim%20for%2010%2C000%20daily%20steps)")
     else:
         st.write("You are likely to have diabetes. Please seek medical attention.")
 
@@ -132,7 +132,7 @@ st.write("""
 
  Patients were classified as having Pre-diabetes, Diabetes or not having diabetes.
 
-It is most suitable for medical experts with the necessary domain knowledge on Diabetes.
+The primary stakeholders for this diabetes prediction project include healthcare providers, public health organizations, and individual patients concerned about their diabetes risk. 
 """)
 
 
