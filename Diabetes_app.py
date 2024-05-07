@@ -129,6 +129,8 @@ st.markdown('Data obtained from [Kaggle](https://www.kaggle.com/code/nanda107/di
 st.write("""
 ## This app predicts the likelihood of having Diabetes.
 
+Disclaimer:
+This web application provides predictions for diabetes risk based on statistical analysis and machine learning algorithms; however, it is not a substitute for professional medical advice, and users should consult with a healthcare provider for any medical concerns.
 
  Patients were classified as having Pre-diabetes, Diabetes or not having diabetes.
 
