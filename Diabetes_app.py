@@ -15,10 +15,10 @@ st.set_page_config(
 st.title("Diabetes Prediction App")
 
 def load_lottieurl(url):
-     r = requests.get(url)
-     if r.status_code != 200:
-          return None
-     return r.json()
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
 lottie_coding = "https://lottie.host/57fc3155-e3dc-4611-b50a-ccd5a58291e0/84oE4KwywI.json"
 
@@ -28,12 +28,20 @@ st.write('---')
 
 left_column, right_column = st.columns(2)
 with left_column:
-     @st.cache_data
-     def load_model():
-    # Assuming model.pkl is in the same directory as your script
-      with gzip.open('MVP.pkl.gz', 'rb') as file:
-        model = pickle.load(file)
-        return model
+    @st.cache_data
+    def load_model():
+        # Assuming model.pkl.gz is in the same directory as your script
+        try:
+            with gzip.open('MVP.pkl.gz', 'rb') as file:
+                model = pickle.load(file)
+            return model
+        except FileNotFoundError:
+            st.error("Model file not found.")
+        except pickle.UnpicklingError:
+            st.error("Error in unpickling the model. The file might be corrupted.")
+        except Exception as e:
+            st.error(f"An unexpected error occurred while loading the model: {e}")
+            return None
 
 def predict_diabetes(input_data, model):
     # Ensure input data features match those the model was trained with
@@ -88,42 +96,40 @@ def main():
         'PhysicalHealth': physical_health
     }
 
-
-    # Make prediction
+    # Load model
     model = load_model()
-    prediction, prediction_proba = predict_diabetes(input_data, model)
+    if model:
+        # Make prediction
+        prediction, prediction_proba = predict_diabetes(input_data, model)
 
-    # Interpret prediction
-    classes = ['Diabetes', 'Pre-Diabetes', 'No Diabetes']
-    result_class = classes[int(prediction)]  # Convert prediction to integer for indexing
-    st.write(f"Prediction: {result_class}")
+        # Interpret prediction
+        classes = ['Diabetes', 'Pre-Diabetes', 'No Diabetes']
+        result_class = classes[int(prediction)]  # Convert prediction to integer for indexing
+        st.write(f"Prediction: {result_class}")
 
-    # Display prediction probabilities
-    st.write("Prediction Probabilities:")
-    for i, prob in enumerate(prediction_proba[0]):
-        st.write(f"{classes[i]}: {prob * 100:.2f}%") 
+        # Display prediction probabilities
+        st.write("Prediction Probabilities:")
+        for i, prob in enumerate(prediction_proba[0]):
+            st.write(f"{classes[i]}: {prob * 100:.2f}%") 
 
-    # Provide recommendations based on prediction
-    if result_class == 'No Diabetes':
-        st.write("You are healthy!")
-    elif result_class == 'Pre-Diabetes':
-        st.write("You are likely to have pre-diabetes. We recommend some [lifestyle changes.](https://www.hopkinsmedicine.org/health/wellness-and-prevention/prediabetes-diet#:~:text=Stay%20active,aim%20for%2010%2C000%20daily%20steps)")
+        # Provide recommendations based on prediction
+        if result_class == 'No Diabetes':
+            st.write("You are healthy!")
+        elif result_class == 'Pre-Diabetes':
+            st.write("You are likely to have pre-diabetes. We recommend some [lifestyle changes.](https://www.hopkinsmedicine.org/health/wellness-and-prevention/prediabetes-diet#:~:text=Stay%20active,aim%20for%2010%2C000%20daily%20steps)")
+        else:
+            st.write("You are likely to have diabetes. Please seek medical attention.")
     else:
-        st.write("You are likely to have diabetes. Please seek medical attention.")
+        st.write("Model could not be loaded. Please check the error messages above.")
 
 if __name__ == "__main__":
     main()
-    with right_column:
-         lottie_coding = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCHHb79.json"
-         st_lottie(lottie_coding, height=300, width=400, key="health2")
 
-
-
+with right_column:
+    lottie_coding = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCHHb79.json"
+    st_lottie(lottie_coding, height=300, width=400, key="health2")
 
 st.write('---')
-
-
-
 
 st.markdown('Data obtained from [Kaggle](https://www.kaggle.com/code/nanda107/diabetes) and is used to predict Diabetes.')
 
@@ -138,32 +144,30 @@ This web application provides predictions for diabetes risk based on statistical
 The primary stakeholders for this diabetes prediction project include healthcare providers, public health organizations, and individual patients concerned about their diabetes risk. 
 """)
 
-
 st.write('---')
 
 def local_css(file_name):
-     with open(file_name) as f:
-          st.markdown (f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    with open(file_name) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 local_css("Style/style.css")
 
 with st.container():
-     st.write("---")
-     st.header("Get in touch with us!")
-     st.write("##")
-     contact_form = '''
-     <input type="hidden" name="_captcha" value="false">
-     <form action="https://formsubmit.co/opondigeorge@gmail.com" method="POST">
-     <input type="text" name="name" placeholder="Your name" required>
-     <input type="email" name="email" placeholder="Your email" required>
-     <textarea name="Message" placeholder="Your message here" required></textarea>
-     <button type="submit">Send</button>
-</form>
-'''
-lottie_animation = "https://lottie.host/87b1eda6-f65b-47f0-b06a-fa93ee6f73ba/bNjIHSLbzV.json"
-left_column, right_column = st.columns (2)
-with left_column:
-     st.markdown (contact_form, unsafe_allow_html=True)
-     with right_column:
-          st_lottie(lottie_animation, height=300, width=400, key="message")
-          
+    st.write("---")
+    st.header("Get in touch with us!")
+    st.write("##")
+    contact_form = '''
+    <input type="hidden" name="_captcha" value="false">
+    <form action="https://formsubmit.co/opondigeorge@gmail.com" method="POST">
+        <input type="text" name="name" placeholder="Your name" required>
+        <input type="email" name="email" placeholder="Your email" required>
+        <textarea name="Message" placeholder="Your message here" required></textarea>
+        <button type="submit">Send</button>
+    </form>
+    '''
+    lottie_animation = "https://lottie.host/87b1eda6-f65b-47f0-b06a-fa93ee6f73ba/bNjIHSLbzV.json"
+    left_column, right_column = st.columns(2)
+    with left_column:
+        st.markdown(contact_form, unsafe_allow_html=True)
+    with right_column:
+        st_lottie(lottie_animation, height=300, width=400, key="message")
