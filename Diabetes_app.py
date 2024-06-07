@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import requests
+import gzip
 from streamlit_lottie import st_lottie
 
 # Set page configuration with the logo
@@ -30,7 +31,7 @@ with left_column:
      @st.cache_data
      def load_model():
     # Assuming model.pkl is in the same directory as your script
-      with open('MVP.pkl', 'rb') as file:
+      with gzip.open('MVP.pkl.gz', 'rb') as file:
         model = pickle.load(file)
         return model
 
