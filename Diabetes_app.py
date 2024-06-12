@@ -30,13 +30,20 @@ left_column, right_column = st.columns(2)
 with left_column:
     @st.cache_data
     def load_model():
-        # Assuming model.pkl.gz is in the same directory as your script
+        dropbox_url = "https://www.dropbox.com/scl/fi/uzj1ued7y8ars1eeav7ht/MVP.pkl.gz?rlkey=4n3c70q2ufqjgut9jpl41e423&st=011gn0nh&dl=1"
+        
         try:
-            with gzip.open('MVP.pkl.gz', 'rb') as file:
+            # Download the file from Dropbox
+            response = requests.get(dropbox_url)
+            response.raise_for_status()  # Check if the request was successful
+
+            # Open the downloaded file with gzip
+            with gzip.open(response.content, 'rb') as file:
                 model = pickle.load(file)
             return model
-        except FileNotFoundError:
-            st.error("Model file not found.")
+
+        except requests.exceptions.RequestException as e:
+            st.error(f"Error in downloading the model: {e}")
         except pickle.UnpicklingError:
             st.error("Error in unpickling the model. The file might be corrupted.")
         except Exception as e:
