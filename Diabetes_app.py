@@ -3,6 +3,8 @@ import pandas as pd
 import pickle
 import requests
 import gzip
+import os
+from io import BytesIO
 from streamlit_lottie import st_lottie
 
 # Set page configuration with the logo
@@ -37,9 +39,18 @@ with left_column:
             response = requests.get(dropbox_url)
             response.raise_for_status()  # Check if the request was successful
 
-            # Open the downloaded file with gzip
-            with gzip.open(response.content, 'rb') as file:
+            # Save the downloaded content to a temporary file
+            temp_file = 'temp_model.pkl.gz'
+            with open(temp_file, 'wb') as f:
+                f.write(response.content)
+
+            # Open the temporary file with gzip and load the model
+            with gzip.open(temp_file, 'rb') as file:
                 model = pickle.load(file)
+
+            # Remove the temporary file
+            os.remove(temp_file)
+            
             return model
 
         except requests.exceptions.RequestException as e:
