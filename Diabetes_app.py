@@ -32,7 +32,7 @@ left_column, right_column = st.columns(2)
 with left_column:
     @st.cache_data
     def load_model():
-        dropbox_url = "https://www.dropbox.com/scl/fi/uzj1ued7y8ars1eeav7ht/MVP.pkl.gz?rlkey=4n3c70q2ufqjgut9jpl41e423&st=x3mqy07s&dl=0"
+        dropbox_url = "https://www.dropbox.com/scl/fi/uzj1ued7y8ars1eeav7ht/MVP.pkl.gz?rlkey=4n3c70q2ufqjgut9jpl41e423&st=x3mqy07s&dl=1"
         
         try:
             # Download the file from Dropbox
