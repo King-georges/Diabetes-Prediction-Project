@@ -39,19 +39,16 @@ with left_column:
             # Download the file from Google Drive
             response = requests.get(google_drive_url)
             response.raise_for_status()  # Check if the request was successful
+            
+            # Check the content type to ensure it's not an HTML page
+            if 'html' in response.headers.get('Content-Type', ''):
+                st.error("The downloaded file is an HTML page. Please check the Google Drive link.")
+                return None
 
-            # Save the downloaded content to a temporary file
-            temp_file = 'temp_model.pkl.gz'
-            with open(temp_file, 'wb') as f:
-                f.write(response.content)
-
-            # Open the temporary file with gzip and load the model
-            with gzip.open(temp_file, 'rb') as file:
+            # Open the downloaded content with gzip and load the model
+            with gzip.open(BytesIO(response.content), 'rb') as file:
                 model = pickle.load(file)
 
-            # Remove the temporary file
-            os.remove(temp_file)
-            
             return model
 
         except requests.exceptions.RequestException as e:
