@@ -32,11 +32,12 @@ left_column, right_column = st.columns(2)
 with left_column:
     @st.cache_data
     def load_model():
-        dropbox_url = "https://www.dropbox.com/scl/fi/uzj1ued7y8ars1eeav7ht/MVP.pkl.gz?rlkey=4n3c70q2ufqjgut9jpl41e423&st=x3mqy07s&dl=1"
+        # Direct download link for the Google Drive file
+        google_drive_url = "https://drive.google.com/uc?export=download&id=1cTSUMj_nJgvPEb5QZ3vhmm6xtqSejLfE"
         
         try:
-            # Download the file from Dropbox
-            response = requests.get(dropbox_url)
+            # Download the file from Google Drive
+            response = requests.get(google_drive_url)
             response.raise_for_status()  # Check if the request was successful
 
             # Save the downloaded content to a temporary file
