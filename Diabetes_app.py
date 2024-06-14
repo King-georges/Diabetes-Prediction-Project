@@ -3,7 +3,6 @@ import pandas as pd
 import pickle
 import requests
 import gzip
-import os
 from io import BytesIO
 from streamlit_lottie import st_lottie
 
@@ -33,7 +32,7 @@ with left_column:
     @st.cache_data
     def load_model():
         # Direct download link for the Google Drive file
-        google_drive_url = "https://drive.google.com/uc?export=download&id=1cTSUMj_nJgvPEb5QZ3vhmm6xtqSejLfE"
+        google_drive_url = "https://drive.google.com/uc?export=download&id=1Z_T10RLhrd_XJ43SI631KHSS5BW6LjEB"
         
         try:
             # Download the file from Google Drive
