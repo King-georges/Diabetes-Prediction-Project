@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import requests
-import gzip
+import lzma
 from io import BytesIO
 from streamlit_lottie import st_lottie
 
@@ -44,8 +44,8 @@ with left_column:
                 st.error("The downloaded file is an HTML page. Please check the Google Drive link.")
                 return None
 
-            # Open the downloaded content with gzip and load the model
-            with gzip.open(BytesIO(response.content), 'rb') as file:
+            # Open the downloaded content with lzma and load the model
+            with lzma.open(BytesIO(response.content), 'rb') as file:
                 model = pickle.load(file)
 
             return model
