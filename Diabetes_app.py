@@ -32,7 +32,8 @@ with left_column:
     @st.cache_data
     def load_model():
         # Direct download link for the Google Drive file
-        google_drive_url = "https://drive.google.com/uc?export=download&id=1Z_T10RLhrd_XJ43SI631KHSS5BW6LjEB"
+        google_drive_id = "1Z_T10RLhrd_XJ43SI631KHSS5BW6LjEB"
+        google_drive_url = f"https://drive.google.com/uc?export=download&id={google_drive_id}"
         
         try:
             # Download the file from Google Drive
