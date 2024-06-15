@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import requests
 import gzip
 from io import BytesIO
 from streamlit_lottie import st_lottie
@@ -31,27 +30,13 @@ left_column, right_column = st.columns(2)
 with left_column:
     @st.cache_data
     def load_model():
-        # Direct download link for the GitHub file
-        github_url = "https://raw.githubusercontent.com/King-georges/Diabetes-Prediction-Project/main/MVP.pkl.gz"
-        
+        # Load the model from the local file
         try:
-            # Download the file from GitHub
-            response = requests.get(github_url)
-            response.raise_for_status()  # Check if the request was successful
-            
-            # Check the content type to ensure it's not an HTML page
-            if 'html' in response.headers.get('Content-Type', ''):
-                st.error("The downloaded file is an HTML page. Please check the GitHub link.")
-                return None
-
-            # Open the downloaded content with gzip and load the model
-            with gzip.open(BytesIO(response.content), 'rb') as file:
+            with gzip.open('MVP.pkl.gz', 'rb') as file:
                 model = pickle.load(file)
-
             return model
-
-        except requests.exceptions.RequestException as e:
-            st.error(f"Error in downloading the model: {e}")
+        except FileNotFoundError:
+            st.error("Model file not found. Please ensure 'MVP.pkl.gz' is in the correct location.")
         except pickle.UnpicklingError:
             st.error("Error in unpickling the model. The file might be corrupted.")
         except Exception as e:
