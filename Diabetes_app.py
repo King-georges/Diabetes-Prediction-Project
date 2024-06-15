@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import requests
-import lzma
+import gzip
 from io import BytesIO
 from streamlit_lottie import st_lottie
 
@@ -31,22 +31,21 @@ left_column, right_column = st.columns(2)
 with left_column:
     @st.cache_data
     def load_model():
-        # Direct download link for the Google Drive file
-        google_drive_id = "1Z_T10RLhrd_XJ43SI631KHSS5BW6LjEB"
-        google_drive_url = f"https://drive.google.com/uc?export=download&id={google_drive_id}"
+        # Direct download link for the GitHub file
+        github_url = "https://raw.githubusercontent.com/King-georges/Diabetes-Prediction-Project/main/MVP.pkl.gz"
         
         try:
-            # Download the file from Google Drive
-            response = requests.get(google_drive_url)
+            # Download the file from GitHub
+            response = requests.get(github_url)
             response.raise_for_status()  # Check if the request was successful
             
             # Check the content type to ensure it's not an HTML page
             if 'html' in response.headers.get('Content-Type', ''):
-                st.error("The downloaded file is an HTML page. Please check the Google Drive link.")
+                st.error("The downloaded file is an HTML page. Please check the GitHub link.")
                 return None
 
-            # Open the downloaded content with lzma and load the model
-            with lzma.open(BytesIO(response.content), 'rb') as file:
+            # Open the downloaded content with gzip and load the model
+            with gzip.open(BytesIO(response.content), 'rb') as file:
                 model = pickle.load(file)
 
             return model
