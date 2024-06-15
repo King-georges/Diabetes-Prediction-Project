@@ -35,7 +35,7 @@ with left_column:
         st.write(f"Current working directory: {os.getcwd()}")
 
         # Check if file exists in the current directory
-        file_path =  r'C:\Users\Admin\Documents\Moringa\Projects\Diabetes Final project\Diabetes-Prediction-Project\MVP.pkl.gz'
+        file_path =  'MVP.pkl.gz'
 
         if not os.path.isfile(file_path):
             st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.gz' is in the correct location.")
