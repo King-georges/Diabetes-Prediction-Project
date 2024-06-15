@@ -27,28 +27,32 @@ st_lottie(lottie_coding, height=300, width=400, key="health")
 
 st.write('---')
 
-@st.cache(allow_output_mutation=True)
-def load_model():
-    try:
-        # Define the URL of your model file on GitHub
-        github_model_url = 'https://raw.githubusercontent.com/King-georges/Diabetes-Prediction-Project/main/MVP.pkl.gz'
+left_column, right_column = st.columns(2)
+with left_column:
+    @st.cache_data
+    def load_model():
+        # Print current working directory
+        st.write(f"Current working directory: {os.getcwd()}")
 
-        # Download the model file
-        response = requests.get(github_model_url)
-        response.raise_for_status()  # Raise an exception for bad status codes
-        
-        # Load the model from the downloaded content
-        model = pickle.loads(response.content)
-        return model
-    except requests.exceptions.RequestException as e:
-        st.error(f"Error downloading model: {e}")
-        return None
-    except pickle.UnpicklingError:
-        st.error("Error in unpickling the model. The file might be corrupted.")
-        return None
-    except Exception as e:
-        st.error(f"An unexpected error occurred while loading the model: {e}")
-        return None
+        # Check if file exists in the current directory
+        file_path =  r'C:\Users\Admin\Documents\Moringa\Projects\Diabetes Final project\Diabetes-Prediction-Project\MVP.pkl.gz'
+
+        if not os.path.isfile(file_path):
+            st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.gz' is in the correct location.")
+            return None
+
+        # Load the model from the local file
+        try:
+            with gzip.open(file_path, 'rb') as file:
+                model = pickle.load(file)
+            return model
+        except FileNotFoundError:
+            st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.gz' is in the correct location.")
+        except pickle.UnpicklingError:
+            st.error("Error in unpicking the model. The file might be corrupted.")
+        except Exception as e:
+            st.error(f"An unexpected error occurred while loading the model: {e}")
+            return None
 
 def predict_diabetes(input_data, model):
     # Ensure input data features match those the model was trained with
@@ -129,7 +133,10 @@ def main():
     else:
         st.write("Model could not be loaded. Please check the error messages above.")
 
-with st.sidebar:
+if __name__ == "__main__":
+    main()
+
+with right_column:
     lottie_coding = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCHHb79.json"
     st_lottie(lottie_coding, height=300, width=400, key="health2")
 
@@ -143,9 +150,9 @@ st.write("""
 Disclaimer:
 This web application provides predictions for diabetes risk based on statistical analysis and machine learning algorithms; however, it is not a substitute for professional medical advice, and users should consult with a healthcare provider for any medical concerns.
 
-Patients were classified as having Pre-diabetes, Diabetes or not having diabetes.
+ Patients were classified as having Pre-diabetes, Diabetes or not having diabetes.
 
-The primary stakeholders for this diabetes prediction project include healthcare providers, public health organizations, and individual patients concerned about their diabetes risk.
+The primary stakeholders for this diabetes prediction project include healthcare providers, public health organizations, and individual patients concerned about their diabetes risk. 
 """)
 
 st.write('---')
