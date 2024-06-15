@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import gzip
-from io import BytesIO
+import os
 from streamlit_lottie import st_lottie
 
 # Set page configuration with the logo
@@ -30,13 +30,24 @@ left_column, right_column = st.columns(2)
 with left_column:
     @st.cache_data
     def load_model():
+        # Print current working directory
+        st.write(f"Current working directory: {os.getcwd()}")
+
+        # Specify the absolute path to the model file
+        file_path = r'C:\Users\Admin\Documents\Moringa\Projects\Diabetes Final project\Diabetes-Prediction-Project\MVP.pkl.gz'
+
+        # Check if file exists in the specified directory
+        if not os.path.isfile(file_path):
+            st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.gz' is in the correct location.")
+            return None
+
         # Load the model from the local file
         try:
-            with gzip.open('C:\Users\Admin\Documents\Moringa\Projects\Diabetes Final project\Diabetes-Prediction-Project\MVP.pkl.gz', 'rb') as file:
+            with gzip.open(file_path, 'rb') as file:
                 model = pickle.load(file)
             return model
         except FileNotFoundError:
-            st.error("Model file not found. Please ensure 'MVP.pkl.gz' is in the correct location.")
+            st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.gz' is in the correct location.")
         except pickle.UnpicklingError:
             st.error("Error in unpickling the model. The file might be corrupted.")
         except Exception as e:
