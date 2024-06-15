@@ -32,7 +32,7 @@ with left_column:
     def load_model():
         # Load the model from the local file
         try:
-            with gzip.open('MVP.pkl.gz', 'rb') as file:
+            with gzip.open('C:\Users\Admin\Documents\Moringa\Projects\Diabetes Final project\Diabetes-Prediction-Project\MVP.pkl.gz', 'rb') as file:
                 model = pickle.load(file)
             return model
         except FileNotFoundError:
