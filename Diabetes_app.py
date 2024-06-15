@@ -31,8 +31,6 @@ left_column, right_column = st.columns(2)
 with left_column:
     @st.cache_data
     def load_model():
-        # Print current working directory
-        st.write(f"Current working directory: {os.getcwd()}")
 
         # Check if file exists in the current directory
         file_path =  'MVP.pkl.gz'
