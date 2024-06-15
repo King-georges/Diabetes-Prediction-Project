@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import gzip
 import os
+import gzip
 from streamlit_lottie import st_lottie
+import requests
 
 # Set page configuration with the logo
 st.set_page_config(
@@ -47,7 +48,7 @@ with left_column:
         except FileNotFoundError:
             st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.gz' is in the correct location.")
         except pickle.UnpicklingError:
-            st.error("Error in unpickling the model. The file might be corrupted.")
+            st.error("Error in unpicking the model. The file might be corrupted.")
         except Exception as e:
             st.error(f"An unexpected error occurred while loading the model: {e}")
             return None
