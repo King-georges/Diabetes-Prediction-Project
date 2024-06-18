@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 import pickle
 import os
-import gzip
+import lzma
 from streamlit_lottie import st_lottie
 import requests
 
 # Set page configuration with the logo
 st.set_page_config(
     page_title="Model Mavericks Analytics",
-    page_icon='images/model mavericks.jpg',  # Correct path to your logo
+    page_icon='images/model_mavericks.jpg',  # Ensure the correct path to your logo
     layout='wide'
 )
 
@@ -22,7 +22,6 @@ def load_lottieurl(url):
     return r.json()
 
 lottie_coding = "https://lottie.host/57fc3155-e3dc-4611-b50a-ccd5a58291e0/84oE4KwywI.json"
-
 st_lottie(lottie_coding, height=300, width=400, key="health")
 
 st.write('---')
@@ -31,48 +30,33 @@ left_column, right_column = st.columns(2)
 with left_column:
     @st.cache_data
     def load_model():
-
-        # Check if file exists in the current directory
-        file_path =  'MVP.pkl.gz'
+        file_path = 'MVP.pkl.xz'
 
         if not os.path.isfile(file_path):
-            st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.gz' is in the correct location.")
+            st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.xz' is in the correct location.")
             return None
 
-        # Load the model from the local file
         try:
-            with gzip.open(file_path, 'rb') as file:
+            with lzma.open(file_path, 'rb') as file:
                 model = pickle.load(file)
             return model
-        except FileNotFoundError:
-            st.error(f"Model file not found at {file_path}. Please ensure 'MVP.pkl.gz' is in the correct location.")
-        except pickle.UnpicklingError:
-            st.error("Error in unpicking the model. The file might be corrupted.")
         except Exception as e:
-            st.error(f"An unexpected error occurred while loading the model: {e}")
+            st.error(f"An error occurred while loading the model: {e}")
             return None
 
 def predict_diabetes(input_data, model):
-    # Ensure input data features match those the model was trained with
     expected_features = [
         'BloodPressure', 'Cholesterol', 'Stroke', 'HeartDisease', 'DifficultyWalking',
         'BMI', 'GeneralHealth', 'MentalHealth', 'Age', 'PhysicalHealth'
     ]
-
-    # Create DataFrame from input data ensuring the order of features
     input_df = pd.DataFrame([input_data], columns=expected_features)
-    
-    # Load the trained model (already cached)
     prediction = model.predict(input_df)
     prediction_proba = model.predict_proba(input_df)
-
     return prediction[0], prediction_proba
 
 def main():
-    st.title("Your Prediction")
     st.sidebar.header("User Input Parameters")
 
-    # Collecting inputs using sidebar
     blood_pressure = st.sidebar.radio("Blood Pressure", (1, 0), format_func=lambda x: "High BP" if x == 1 else "Normal BP")
     cholesterol = st.sidebar.radio("Cholesterol", (1, 0), format_func=lambda x: "High Cholesterol" if x == 1 else "Normal Cholesterol")
     stroke = st.sidebar.radio("Stroke", (1, 0), format_func=lambda x: "Had Stroke" if x == 1 else "Never had Stroke")
@@ -84,7 +68,6 @@ def main():
         "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80 or older"
     ]
     age = st.sidebar.selectbox("Age Range", options=age_options)
-    # Convert age range to class number
     age_class = age_options.index(age) + 1
 
     bmi = st.sidebar.slider("BMI", min_value=0, max_value=100, value=25)
@@ -101,27 +84,21 @@ def main():
         'BMI': bmi,
         'GeneralHealth': general_health,
         'MentalHealth': mental_health,
-        'Age': age_class,  # Using age class derived from the selected age range
+        'Age': age_class,
         'PhysicalHealth': physical_health
     }
 
-    # Load model
     model = load_model()
     if model:
-        # Make prediction
         prediction, prediction_proba = predict_diabetes(input_data, model)
-
-        # Interpret prediction
         classes = ['Diabetes', 'Pre-Diabetes', 'No Diabetes']
-        result_class = classes[int(prediction)]  # Convert prediction to integer for indexing
+        result_class = classes[int(prediction)]
         st.write(f"Prediction: {result_class}")
 
-        # Display prediction probabilities
         st.write("Prediction Probabilities:")
         for i, prob in enumerate(prediction_proba[0]):
-            st.write(f"{classes[i]}: {prob * 100:.2f}%") 
+            st.write(f"{classes[i]}: {prob * 100:.2f}%")
 
-        # Provide recommendations based on prediction
         if result_class == 'No Diabetes':
             st.write("You are healthy!")
         elif result_class == 'Pre-Diabetes':
@@ -139,7 +116,6 @@ with right_column:
     st_lottie(lottie_coding, height=300, width=400, key="health2")
 
 st.write('---')
-
 st.markdown('Data obtained from [Kaggle](https://www.kaggle.com/code/nanda107/diabetes) and is used to predict Diabetes.')
 
 st.write("""
