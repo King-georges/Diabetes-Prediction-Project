@@ -16,13 +16,19 @@ st.set_page_config(
 st.title("Diabetes Prediction App")
 
 def load_lottieurl(url):
-    r = requests.get(url)
-    if r.status_code != 200:
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except Exception as e:
+        st.error(f"Error loading lottie animation: {e}")
         return None
-    return r.json()
 
-lottie_coding = "https://lottie.host/57fc3155-e3dc-4611-b50a-ccd5a58291e0/84oE4KwywI.json"
-st_lottie(lottie_coding, height=300, width=400, key="health")
+lottie_coding_url = "https://lottie.host/57fc3155-e3dc-4611-b50a-ccd5a58291e0/84oE4KwywI.json"
+lottie_coding = load_lottieurl(lottie_coding_url)
+if lottie_coding:
+    st_lottie(lottie_coding, height=300, width=400, key="health")
 
 st.write('---')
 
@@ -112,8 +118,10 @@ if __name__ == "__main__":
     main()
 
 with right_column:
-    lottie_coding = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCHHb79.json"
-    st_lottie(lottie_coding, height=300, width=400, key="health2")
+    lottie_coding_url_2 = "https://lottie.host/9a509219-e153-4a7b-a42e-06652ea04e9e/eewuCHHb79.json"
+    lottie_coding_2 = load_lottieurl(lottie_coding_url_2)
+    if lottie_coding_2:
+        st_lottie(lottie_coding_2, height=300, width=400, key="health2")
 
 st.write('---')
 st.markdown('Data obtained from [Kaggle](https://www.kaggle.com/code/nanda107/diabetes) and is used to predict Diabetes.')
@@ -124,7 +132,7 @@ st.write("""
 Disclaimer:
 This web application provides predictions for diabetes risk based on statistical analysis and machine learning algorithms; however, it is not a substitute for professional medical advice, and users should consult with a healthcare provider for any medical concerns.
 
- Patients were classified as having Pre-diabetes, Diabetes or not having diabetes.
+Patients were classified as having Pre-diabetes, Diabetes or not having diabetes.
 
 The primary stakeholders for this diabetes prediction project include healthcare providers, public health organizations, and individual patients concerned about their diabetes risk. 
 """)
@@ -132,8 +140,11 @@ The primary stakeholders for this diabetes prediction project include healthcare
 st.write('---')
 
 def local_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    try:
+        with open(file_name) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Error loading CSS file: {e}")
 
 local_css("Style/style.css")
 
@@ -150,9 +161,11 @@ with st.container():
         <button type="submit">Send</button>
     </form>
     '''
-    lottie_animation = "https://lottie.host/87b1eda6-f65b-47f0-b06a-fa93ee6f73ba/bNjIHSLbzV.json"
+    lottie_animation_url = "https://lottie.host/87b1eda6-f65b-47f0-b06a-fa93ee6f73ba/bNjIHSLbzV.json"
+    lottie_animation = load_lottieurl(lottie_animation_url)
     left_column, right_column = st.columns(2)
     with left_column:
         st.markdown(contact_form, unsafe_allow_html=True)
     with right_column:
-        st_lottie(lottie_animation, height=300, width=400, key="message")
+        if lottie_animation:
+            st_lottie(lottie_animation, height=300, width=400, key="message")
