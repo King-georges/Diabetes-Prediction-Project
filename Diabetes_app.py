@@ -5,6 +5,7 @@ import os
 import lzma
 from streamlit_lottie import st_lottie
 import requests
+import gc
 
 # Set page configuration with the logo
 st.set_page_config(
@@ -114,6 +115,11 @@ def main():
     else:
         st.write("Model could not be loaded. Please check the error messages above.")
 
+    # Clean up memory
+    del input_data
+    del model
+    gc.collect()
+
 if __name__ == "__main__":
     main()
 
@@ -169,3 +175,6 @@ with st.container():
     with right_column:
         if lottie_animation:
             st_lottie(lottie_animation, height=300, width=400, key="message")
+
+# Clean up memory
+gc.collect()
