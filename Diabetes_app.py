@@ -35,7 +35,6 @@ st.write('---')
 
 left_column, right_column = st.columns(2)
 with left_column:
-    @st.cache_data
     def load_model():
         file_path = 'MVP.pkl.xz'
 
@@ -95,6 +94,7 @@ def main():
         'PhysicalHealth': physical_health
     }
 
+    # Load the model only when needed
     model = load_model()
     if model:
         prediction, prediction_proba = predict_diabetes(input_data, model)
@@ -112,13 +112,12 @@ def main():
             st.write("You are likely to have pre-diabetes. We recommend some [lifestyle changes.](https://www.hopkinsmedicine.org/health/wellness-and-prevention/prediabetes-diet#:~:text=Stay%20active,aim%20for%2010%2C000%20daily%20steps)")
         else:
             st.write("You are likely to have diabetes. Please seek medical attention.")
+
+        # Clean up memory
+        del model
+        gc.collect()
     else:
         st.write("Model could not be loaded. Please check the error messages above.")
-
-    # Clean up memory
-    del input_data
-    del model
-    gc.collect()
 
 if __name__ == "__main__":
     main()
@@ -176,5 +175,5 @@ with st.container():
         if lottie_animation:
             st_lottie(lottie_animation, height=300, width=400, key="message")
 
-# Clean up memory
+# Final memory cleanup
 gc.collect()
